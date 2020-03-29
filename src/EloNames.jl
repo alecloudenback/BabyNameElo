@@ -80,6 +80,17 @@ function random_matchup(names)
     matchup(ns[1],ns[2],names,random_matchup)
 end
 
+function girl_matchup(names)
+    gender = girl
+    ns = sample(collect(values(names[gender])),2,replace=false)
+    matchup(ns[1],ns[2],names,girl_matchup)
+end
+
+function boy_matchup(names)
+    gender = boy
+    ns = sample(collect(values(names[gender])),2,replace=false)
+    matchup(ns[1],ns[2],names,boy_matchup)
+end
 
 
 function matchup(name1,name2,names,next)
@@ -88,8 +99,11 @@ function matchup(name1,name2,names,next)
         name2.name,
         "Main Menu",
     ]
+    @assert name1.gender == name2.gender
+
+    gender_str = name1.gender == boy ? "boy ♂ " : "girl ♀ "
     menu = RadioMenu(options)
-    choice = request("Pick winner:", menu)
+    choice = request("Pick winner for $gender_str", menu)
     
     if choice == 1 
         m = Matchup(name1.name,name2.name,name1.gender)
@@ -143,6 +157,10 @@ function main_menu(names)
     println("You selected $(options[choice])")
     if choice == 1
         random_matchup(names)
+    elseif choice == 2
+        boy_matchup(names)
+    elseif choice == 3
+        girl_matchup(names)
     elseif choice == 5
         print(baby_ascii)
         exit()
