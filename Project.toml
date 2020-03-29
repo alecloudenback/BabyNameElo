@@ -1,0 +1,13 @@
+name = "EloNames"
+uuid = "461d406e-8d43-4251-8b82-7f7e3ee29d99"
+authors = ["Alec Loudenback <alecloudenback@gmail.com>"]
+version = "0.1.0"
+
+[deps]
+CSV = "336ed68f-0bac-5ca0-87d4-7b16caf5d00b"
+DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
+Distributions = "31c24e10-a181-5473-b8eb-7969acd0382f"
+FIGlet = "3064a664-84fe-4d92-92c7-ed492f3d8fae"
+REPL = "3fa0cd96-eef1-5676-8a61-b3b8758bbffb"
+StatsBase = "2913bbd2-ae8a-5f71-8c99-4fb6c76f3a91"
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
