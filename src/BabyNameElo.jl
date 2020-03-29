@@ -110,6 +110,16 @@ function write_elo_results(out_path,names,next)
     sort!(girl_results,by = x -> x.elo, rev=true)
     sort!(boy_results,by = x -> x.elo, rev=true)
     
+    # warn users if the number of matchups is below some arbitrary number so that they
+    # know that the results are not really valid.
+    min_played = min(
+        minimum([x.contests for x in boy_results]),
+        minimum([x.contests for x in girl_results]))
+
+    if min_played <= 5
+        println("WARNING! You should play more matchups to get a better result. \n Some names have only
+            been matched up $min_played times.")
+
     CSV.write(out_path,DataFrame([boy_results;girl_results]))
     println("Updating rankings saved to $out_path")
 
