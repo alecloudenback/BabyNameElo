@@ -230,7 +230,7 @@ function matchup(name1,name2,names,next)
 
     # increment the number of matches played to assist in weighting sample
     names[name1.gender][name1.name] = @set name1.played += 1
-    names[name2.gender][name2.name] = @set name2.played += 2
+    names[name2.gender][name2.name] = @set name2.played += 1
 
     write_result(out_csv,m,names,next)
 
