@@ -210,8 +210,8 @@ function write_result(out,m,names,next)
 end
 
 
-function start()
-    FIGlet.render(" Little Loudenback", "train")
+function start(last_name="Baby Name")
+    FIGlet.render("Little $last_name", "train")
     names = load_names()
     names = process_results(out_csv,names)
     main_menu(names)
