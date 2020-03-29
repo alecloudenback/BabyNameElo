@@ -74,28 +74,28 @@ function process_results(src_path,names)
         results = CSV.read(src_path,header=["winner","loser","gender"])
         size(results)
         if size(results,1) > 0 
-    # reset names in case this has been run already in the same session
-     
-    for gender in [boy,girl]
-        @showprogress "resetting $gender names" for (k,v) in names[gender]
-            @set v.elo = elo_start
-            @set v.played = 0
-        end
-    end
-    matchnum = 1
-    @showprogress "calculating updated ratings" for r in eachrow(results)
-        gender = r.gender == "boy" ? boy : girl
-        n1 = names[gender][r.winner]
-        n2 = names[gender][r.loser]
-        e1, e2 = new_elos(n1,n2)
-        new1 = @set n1.elo = e1
-        new1 = @set new1.played += 1
+            # reset names in case this has been run already in the same session
+            
+            for gender in [boy,girl]
+                @showprogress "resetting $gender names" for (k,v) in names[gender]
+                    @set v.elo = elo_start
+                    @set v.played = 0
+                end
+            end
+            matchnum = 1
+            @showprogress "calculating updated ratings" for r in eachrow(results)
+                gender = r.gender == "boy" ? boy : girl
+                n1 = names[gender][r.winner]
+                n2 = names[gender][r.loser]
+                e1, e2 = new_elos(n1,n2)
+                new1 = @set n1.elo = e1
+                new1 = @set new1.played += 1
 
-        names[gender][r.winner] = new1
-        new2 = @set n2.elo = e2
-        new2 = @set new2.played += 1
-        names[gender][r.loser] = new2
-    end
+                names[gender][r.winner] = new1
+                new2 = @set n2.elo = e2
+                new2 = @set new2.played += 1
+                names[gender][r.loser] = new2
+            end
         end
     end
 
@@ -118,7 +118,7 @@ function write_elo_results(out_path,names,next)
         pretty_table(r[1:top_n],header,header_crayon = crayon"yellow bold", formatter=ft_printf("%4.1f",2))
 
     end
-    
+
     next(names)
 end
 
