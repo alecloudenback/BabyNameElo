@@ -60,6 +60,7 @@ function  probability(elo1,elo2)
     return 1.0 / (1 + 1.0 * 10^ (1.0 * (elo1 - elo2) / 400))
 end
 
+"Caclulate new Elo scores given a winner and loser"
 function new_elos(name_winner,name_loser)
     prob = probability(name_winner.elo,name_loser.elo)
     e1 = name_winner.elo + K * (1-prob)
@@ -68,6 +69,7 @@ function new_elos(name_winner,name_loser)
     return e1, e2
 end
 
+"Loop through the file that has the match results and recalculate Elos"
 function process_results(src_path,names)
     if isfile(src_path)
         results = CSV.read(src_path,header=["winner","loser","gender"])
@@ -101,6 +103,7 @@ function process_results(src_path,names)
     return names
 end
 
+"Write the calculated scores to disk"
 function write_elo_results(out_path,names,next)
     boy_results = [(name = v.name,elo=v.elo,gender="boy",contests=v.played) for (k,v) in  names[boy]]
     girl_results = [(name = v.name,elo=v.elo,gender="girl",contests=v.played) for (k,v) in  names[girl]]
@@ -110,6 +113,7 @@ function write_elo_results(out_path,names,next)
     CSV.write(out_path,DataFrame([boy_results;girl_results]))
     println("Updating rankings saved to $out_path")
 
+    # Display a summary in the console as well
     top_n = 15
     for r in [boy_results,girl_results]
         println("Top $(r[1].gender) results (out of $(length(r)) names):")
@@ -121,6 +125,7 @@ function write_elo_results(out_path,names,next)
     next(names)
 end
 
+"Load the set of names"
 function load_names()
     path = joinpath(dirname(pathof(BabyNameElo)), "names.csv")
     df = CSV.read(path)
@@ -140,6 +145,8 @@ function load_names()
     )
 end
 
+"Randomly pick boy/girl and then select two names to compare. Liklihood of 
+being selected is inversely propotional to number of games played so far"
 function random_matchup(names)
     gender = rand([boy,girl])
     sub_names = collect(values(names[gender]))
@@ -163,7 +170,7 @@ function boy_matchup(names)
     matchup(ns[1],ns[2],names,boy_matchup)
 end
 
-
+"Given two names, ask user to pick a winner and process the result"
 function matchup(name1,name2,names,next)
     options = [
         name1.name,
@@ -195,6 +202,7 @@ function matchup(name1,name2,names,next)
     return
 end
 
+"Write the result of a matchup to disk"
 function write_result(out,m,names,next)
     # show matchup
     gen = m.gender == boy ? "boy" : "girl"
@@ -208,7 +216,7 @@ function write_result(out,m,names,next)
     next(names)
 end
 
-
+"Start the program - this is the main entry point."
 function start(last_name="Baby Name")
     FIGlet.render("Little $last_name", "train")
     names = load_names()
@@ -218,7 +226,7 @@ function start(last_name="Baby Name")
 end
 
 
-
+"Show the main menu"
 function main_menu(names)
     options = [
         "Random matchup",
@@ -249,6 +257,6 @@ function main_menu(names)
     end
 end
 
-export probability, start
+export start
 
 end # module
