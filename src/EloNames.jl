@@ -77,15 +77,16 @@ end
 function random_matchup(names)
     gender = rand([boy,girl])
     ns = sample(collect(values(names[gender])),2,replace=false)
-    matchup(ns[1],ns[2],names)
+    matchup(ns[1],ns[2],names,random_matchup)
 end
 
 
 
-function matchup(name1,name2,names)
+function matchup(name1,name2,names,next)
     options = [
         name1.name,
         name2.name,
+        "Main Menu",
     ]
     menu = RadioMenu(options)
     choice = request("Pick winner:", menu)
@@ -94,16 +95,18 @@ function matchup(name1,name2,names)
         m = Matchup(name1.name,name2.name,name1.gender)
     elseif choice == 2
         m = Matchup(name2.name,name1.name,name1.gender)
+    elseif choice == 3 
+        main_menu(names)
     else
         return
     end
 
-    write_result(out_csv,m,names)
+    write_result(out_csv,m,names,next)
 
     return
 end
 
-function write_result(out,m,names)
+function write_result(out,m,names,next)
     # show matchup
     gen = m.gender == boy ? "boy" : "girl"
     df = DataFrame([(winner= m.winner,loser=m.loser,gender=gen)])
@@ -113,7 +116,7 @@ function write_result(out,m,names)
         touch(out)
     end
     CSV.write(out, df, writeheader = false, append = true,delim=',')
-    main_menu(names)
+    next(names)
 end
 
 
