@@ -6,6 +6,7 @@ using CSV
 using DataFrames
 using StatsBase
 using Setfield
+using ProgressMeter 
 
 import REPL
 using REPL.TerminalMenus
