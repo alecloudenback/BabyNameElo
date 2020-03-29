@@ -12,6 +12,9 @@ import REPL
 using REPL.TerminalMenus
 
 const out_csv = joinpath(pwd(),"EloNames_matchup_results.csv")
+const result_csv = joinpath(pwd(),"Name_Results.csv")
+const elo_start = 1200.0
+const K = 32
 
 const baby_ascii = raw"
            _)_
@@ -38,7 +41,7 @@ const baby_ascii = raw"
 
 Base.@kwdef struct Name1
     name::String
-    elo=1200
+    elo=elo_start
     gender
     played=0
 end
@@ -55,6 +58,48 @@ Matchup = Matchup1
 "Calculate the probability of winning"
 function  probability(elo1,elo2)
     return 1.0 / (1 + 1.0 * 10^ (1.0 * (elo1 - elo2) / 400))
+end
+
+function new_elos(name_winner,name_loser)
+    prob = probability(name_winner.elo,name_loser.elo)
+    e1 = name_winner.elo + K * (1-prob)
+    e2 = name_loser.elo  + K * (0-(1-prob))
+
+    return e1, e2
+end
+
+function process_results(path,names)
+    results = CSV.read(out_csv,header=["winner","loser","gender"])
+    # reset names in case this has been run already in the same session
+     
+    for gender in [boy,girl]
+        @showprogress "resetting $gender names" for (k,v) in names[gender]
+            @set v.elo = elo_start
+            @set v.played = 0
+        end
+    end
+    matchnum = 1
+    @showprogress "calculating updated ratings" for r in eachrow(results)
+        gender = r.gender == "boy" ? boy : girl
+        n1 = names[gender][r.winner]
+        n2 = names[gender][r.loser]
+        e1, e2 = new_elos(n1,n2)
+        new1 = @set n1.elo = e1
+        new1 = @set new1.played += 1
+
+        names[gender][r.winner] = new1
+        new2 = @set n2.elo = e2
+        new2 = @set new2.played += 1
+        names[gender][r.loser] = new2
+    end
+
+    boy_results = [(name = v.name,elo=v.elo,gender="boy",contests=v.played) for (k,v) in  names[boy]]
+    girl_results = [(name = v.name,elo=v.elo,gender="girl",contests=v.played) for (k,v) in  names[girl]]
+
+    
+    CSV.write(result_csv,DataFrame([boy_results;girl_results]))
+    println("Updating rankings saved to $result_csv")
+    main_menu(names)
 end
 
 function load_names()
@@ -163,6 +208,8 @@ function main_menu(names)
         boy_matchup(names)
     elseif choice == 3
         girl_matchup(names)
+    elseif choice == 4
+        process_results(result_csv,names)
     elseif choice == 5
         print(baby_ascii)
         exit()
