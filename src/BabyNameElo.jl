@@ -149,24 +149,43 @@ end
 being selected is inversely propotional to number of games played so far"
 function random_matchup(names)
     gender = rand([boy,girl])
+    
+    #weight the sample inversely to num of comparisons so far
     sub_names = collect(values(names[gender]))
     played = [n.played for n in sub_names]
     weights = AnalyticWeights(
         (1.0 .- played ./ max(1,maximum(played))) .^2
     )
+    
     ns = sample(sub_names,weights,2,replace=false)
     matchup(ns[1],ns[2],names,random_matchup)
 end
 
 function girl_matchup(names)
     gender = girl
-    ns = sample(collect(values(names[gender])),2,replace=false)
+
+    #weight the sample inversely to num of comparisons so far
+    sub_names = collect(values(names[gender]))
+    played = [n.played for n in sub_names]
+    weights = AnalyticWeights(
+        (1.0 .- played ./ max(1,maximum(played))) .^2
+    )
+    
+    ns = sample(sub_names,weights,2,replace=false)
     matchup(ns[1],ns[2],names,girl_matchup)
 end
 
 function boy_matchup(names)
     gender = boy
-    ns = sample(collect(values(names[gender])),2,replace=false)
+    
+    #weight the sample inversely to num of comparisons so far
+    sub_names = collect(values(names[gender]))
+    played = [n.played for n in sub_names]
+    weights = AnalyticWeights(
+        (1.0 .- played ./ max(1,maximum(played))) .^2
+    )
+    
+    ns = sample(sub_names,weights,2,replace=false)
     matchup(ns[1],ns[2],names,boy_matchup)
 end
 
