@@ -11,8 +11,8 @@ using PrettyTables
 import REPL
 using REPL.TerminalMenus
 
-const out_csv = joinpath(pwd(),"BabyNameElo_matchup_results.csv")
-const result_csv = joinpath(pwd(),"Name_Results.csv")
+const out_csv = joinpath(homedir(),"BabyNameElo_matchup_results.csv")
+const result_csv = joinpath(homedir(),"Name_Results.csv")
 const elo_start = 1200.0
 const K = 32
 
