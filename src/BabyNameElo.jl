@@ -170,7 +170,7 @@ function random_matchup(names)
     sub_names = collect(values(names[gender]))
     played = [n.played for n in sub_names]
     weights = AnalyticWeights(
-        (1.0 .- played ./ max(1,maximum(played))) .^2
+        (1.01 .- played ./ max(1,maximum(played))) .^2
     )
     
     ns = sample(sub_names,weights,2,replace=false)
@@ -184,7 +184,7 @@ function girl_matchup(names)
     sub_names = collect(values(names[gender]))
     played = [n.played for n in sub_names]
     weights = AnalyticWeights(
-        (1.0 .- played ./ max(1,maximum(played))) .^2
+        (1.01 .- played ./ max(1,maximum(played))) .^2
     )
     
     ns = sample(sub_names,weights,2,replace=false)
@@ -198,7 +198,7 @@ function boy_matchup(names)
     sub_names = collect(values(names[gender]))
     played = [n.played for n in sub_names]
     weights = AnalyticWeights(
-        (1.0 .- played ./ max(1,maximum(played))) .^2
+        (1.01 .- played ./ max(1,maximum(played))) .^2
     )
     
     ns = sample(sub_names,weights,2,replace=false)
