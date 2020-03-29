@@ -1,4 +1,4 @@
-module EloNames
+module BabyNameElo
 
 using Distributions
 using FIGlet
@@ -12,7 +12,7 @@ using PrettyTables
 import REPL
 using REPL.TerminalMenus
 
-const out_csv = joinpath(pwd(),"EloNames_matchup_results.csv")
+const out_csv = joinpath(pwd(),"BabyNameElo_matchup_results.csv")
 const result_csv = joinpath(pwd(),"Name_Results.csv")
 const elo_start = 1200.0
 const K = 32
@@ -123,7 +123,7 @@ function write_elo_results(out_path,names,next)
 end
 
 function load_names()
-    path = joinpath(dirname(pathof(EloNames)), "names.csv")
+    path = joinpath(dirname(pathof(BabyNameElo)), "names.csv")
     df = CSV.read(path)
     df.name = strip.(df.name)
     boys = Dict()

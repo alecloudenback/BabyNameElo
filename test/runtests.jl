@@ -1,4 +1,4 @@
-using EloNames
+using BabyNameElo
 using Test
 
 @testset "probability" begin
