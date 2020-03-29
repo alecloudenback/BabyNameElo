@@ -137,8 +137,10 @@ function write_elo_results(out_path,names,next)
 end
 
 "Load the set of names"
-function load_names()
-    path = joinpath(dirname(pathof(BabyNameElo)), "names.csv")
+function load_names(path=nothing)
+    if isnothing(path)
+        path = joinpath(dirname(pathof(BabyNameElo)), "sample_names.csv")
+    end
     df = CSV.read(path)
     df.name = strip.(df.name)
     boys = Dict()
@@ -247,9 +249,9 @@ function write_result(out,m,names,next)
 end
 
 "Start the program - this is the main entry point."
-function start(last_name="Baby Name")
+function start(last_name="Baby Name",name_source=nothing)
     FIGlet.render("Little $last_name", "train")
-    names = load_names()
+    names = load_names(name_source)
     names = process_results(out_csv,names)
     main_menu(names)
 
