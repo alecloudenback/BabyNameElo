@@ -79,8 +79,8 @@ function process_results(src_path,names)
             
             for gender in [boy,girl]
                 @showprogress "resetting $gender names" for (k,v) in names[gender]
-                    @set v.elo = elo_start
-                    @set v.played = 0
+                    new = @set v.elo = elo_start
+                    names[gender][k] = @set new.played = 0
                 end
             end
             matchnum = 1
@@ -89,10 +89,13 @@ function process_results(src_path,names)
                 n1 = names[gender][r.winner]
                 n2 = names[gender][r.loser]
                 e1, e2 = new_elos(n1,n2)
+
+                # update first (winner) name
                 new1 = @set n1.elo = e1
                 new1 = @set new1.played += 1
-
                 names[gender][r.winner] = new1
+
+                #update second (loser) name
                 new2 = @set n2.elo = e2
                 new2 = @set new2.played += 1
                 names[gender][r.loser] = new2
