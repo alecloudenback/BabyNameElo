@@ -11,6 +11,27 @@ using REPL.TerminalMenus
 
 const out_csv = joinpath(pwd(),"EloNames_matchup_results.csv")
 
+const baby_ascii = raw"
+           _)_
+        .-'(/ '-.
+       /    `    \
+      /  -     -  \
+     (`  a     a  `)
+      \     ^     /
+       '. '---' .'
+       .-`'---'`-.
+      /           \
+     /  / '   ' \  \
+   _/  /|       |\  \_
+  `/|\` |+++++++|`/|\`
+       /\       /\
+       | `-._.-` |
+       \   / \   /
+       |_ |   | _|
+       | _|   |_ |
+       (ooO   Ooo)
+"
+
 @enum Gender boy girl
 
 Base.@kwdef struct Name1
@@ -119,6 +140,9 @@ function main_menu(names)
     println("You selected $(options[choice])")
     if choice == 1
         random_matchup(names)
+    elseif choice == 5
+        print(baby_ascii)
+        exit()
     else
         println("I'm unsure of what to do with that selection. Returning to main menu.")
         main_menu(names)
