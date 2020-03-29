@@ -5,6 +5,7 @@ using FIGlet
 using CSV
 using DataFrames
 using StatsBase
+using Setfield
 
 import REPL
 using REPL.TerminalMenus
