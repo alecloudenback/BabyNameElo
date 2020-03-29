@@ -113,7 +113,7 @@ function write_elo_results(out_path,names,next)
 
     top_n = 15
     for r in [boy_results,girl_results]
-        println("Top $(r[1].gender) results:")
+        println("Top $(r[1].gender) results (out of $(length(r)) names):")
         header=["Name","Score","Num Contests"]
         pretty_table(r[1:top_n],header,header_crayon = crayon"yellow bold", formatter=ft_printf("%4.1f",2))
 
