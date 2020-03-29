@@ -1,6 +1,5 @@
 module BabyNameElo
 
-using Distributions
 using FIGlet
 using CSV
 using DataFrames
