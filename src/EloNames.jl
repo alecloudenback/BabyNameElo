@@ -143,7 +143,12 @@ end
 
 function random_matchup(names)
     gender = rand([boy,girl])
-    ns = sample(collect(values(names[gender])),2,replace=false)
+    sub_names = collect(values(names[gender]))
+    played = [n.played for n in sub_names]
+    weights = AnalyticWeights(
+        (1.0 .- played ./ max(1,maximum(played))) .^2
+    )
+    ns = sample(sub_names,weights,2,replace=false)
     matchup(ns[1],ns[2],names,random_matchup)
 end
 
