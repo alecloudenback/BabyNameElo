@@ -119,6 +119,7 @@ function write_elo_results(out_path,names,next)
     if min_played <= 5
         println("WARNING! You should play more matchups to get a better result. \n Some names have only
             been matched up $min_played times.")
+    end
 
     CSV.write(out_path,DataFrame([boy_results;girl_results]))
     println("Updating rankings saved to $out_path")
