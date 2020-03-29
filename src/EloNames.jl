@@ -7,6 +7,7 @@ using DataFrames
 using StatsBase
 using Setfield
 using ProgressMeter 
+using PrettyTables
 
 import REPL
 using REPL.TerminalMenus
