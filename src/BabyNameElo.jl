@@ -57,7 +57,7 @@ Matchup = Matchup1
 
 "Calculate the probability of winning"
 function  probability(elo1,elo2)
-    return 1.0 / (1 + 1.0 * 10^ (1.0 * (elo1 - elo2) / 400))
+    return 1.0 / (1 + 10 ^ (1.0 * (elo1 - elo2) / 400))
 end
 
 "Caclulate new Elo scores given a winner and loser"
