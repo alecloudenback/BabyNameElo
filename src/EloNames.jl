@@ -69,8 +69,11 @@ function new_elos(name_winner,name_loser)
     return e1, e2
 end
 
-function process_results(path,names)
-    results = CSV.read(out_csv,header=["winner","loser","gender"])
+function process_results(src_path,names)
+    if isfile(src_path)
+        results = CSV.read(src_path,header=["winner","loser","gender"])
+        size(results)
+        if size(results,1) > 0 
     # reset names in case this has been run already in the same session
      
     for gender in [boy,girl]
@@ -93,14 +96,30 @@ function process_results(path,names)
         new2 = @set new2.played += 1
         names[gender][r.loser] = new2
     end
+        end
+    end
 
+    return names
+end
+
+function write_elo_results(out_path,names,next)
     boy_results = [(name = v.name,elo=v.elo,gender="boy",contests=v.played) for (k,v) in  names[boy]]
     girl_results = [(name = v.name,elo=v.elo,gender="girl",contests=v.played) for (k,v) in  names[girl]]
-
+    sort!(girl_results,by = x -> x.elo, rev=true)
+    sort!(boy_results,by = x -> x.elo, rev=true)
     
-    CSV.write(result_csv,DataFrame([boy_results;girl_results]))
-    println("Updating rankings saved to $result_csv")
-    main_menu(names)
+    CSV.write(out_path,DataFrame([boy_results;girl_results]))
+    println("Updating rankings saved to $out_path")
+
+    top_n = 15
+    for r in [boy_results,girl_results]
+        println("Top $(r[1].gender) results:")
+        header=["Name","Score","Num Contests"]
+        pretty_table(r[1:top_n],header,header_crayon = crayon"yellow bold", formatter=ft_printf("%4.1f",2))
+
+    end
+    
+    next(names)
 end
 
 function load_names()
@@ -185,6 +204,7 @@ end
 function start()
     FIGlet.render(" Little Loudenback", "train")
     names = load_names()
+    names = process_results(out_csv,names)
     main_menu(names)
 
 end
@@ -210,7 +230,8 @@ function main_menu(names)
     elseif choice == 3
         girl_matchup(names)
     elseif choice == 4
-        process_results(result_csv,names)
+        process_results(out_csv,names)
+        write_elo_results(result_csv,names, main_menu)
     elseif choice == 5
         print(baby_ascii)
         exit()
