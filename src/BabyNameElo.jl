@@ -5,8 +5,9 @@ using CSV
 using DataFrames
 using StatsBase
 using Setfield
-using ProgressMeter 
+using ProgressMeter
 using PrettyTables
+using UnicodePlots
 
 import REPL
 using REPL.TerminalMenus
@@ -74,9 +75,9 @@ function process_results(src_path,names)
     if isfile(src_path)
         results = CSV.read(src_path,header=["winner","loser","gender"])
         size(results)
-        if size(results,1) > 0 
+        if size(results,1) > 0
             # reset names in case this has been run already in the same session
-            
+
             for gender in [boy,girl]
                 @showprogress "resetting $gender names" for (k,v) in names[gender]
                     new = @set v.elo = elo_start
@@ -112,7 +113,7 @@ function write_elo_results(out_path,names,next)
     girl_results = [(name = v.name,elo=v.elo,gender="girl",contests=v.played) for (k,v) in  names[girl]]
     sort!(girl_results,by = x -> x.elo, rev=true)
     sort!(boy_results,by = x -> x.elo, rev=true)
-    
+
     # warn users if the number of matchups is below some arbitrary number so that they
     # know that the results are not really valid.
     min_played = min(
@@ -131,8 +132,14 @@ function write_elo_results(out_path,names,next)
     top_n = 15
     for r in [boy_results,girl_results]
         println("Top $(r[1].gender) results (out of $(length(r)) names):")
-        header=["Name","Score","Num Contests"]
-        pretty_table(r[1:top_n],header,header_crayon = crayon"yellow bold", formatter=ft_printf("%4.1f",2))
+        header=["Name","Score","Gender","Num Contests"]
+        pretty_table(r[1:top_n],header,header_crayon = crayon"yellow bold", formatters=ft_printf("%4.1f",2))
+
+        println("Histogram of ratings:")
+        elos = [x.elo for x in r]
+        histogram(elos,nbins=15) |> display
+
+        println("\n\n")
 
     end
 
@@ -157,22 +164,22 @@ function load_names(path=nothing)
     end
 
     return Dict(boy=> boys,
-                girl => girls,        
+                girl => girls,
     )
 end
 
-"Randomly pick boy/girl and then select two names to compare. Liklihood of 
+"Randomly pick boy/girl and then select two names to compare. Liklihood of
 being selected is inversely propotional to number of games played so far"
 function random_matchup(names)
     gender = rand([boy,girl])
-    
+
     #weight the sample inversely to num of comparisons so far
     sub_names = collect(values(names[gender]))
     played = [n.played for n in sub_names]
     weights = AnalyticWeights(
         (1.01 .- played ./ max(1,maximum(played))) .^2
     )
-    
+
     ns = sample(sub_names,weights,2,replace=false)
     matchup(ns[1],ns[2],names,random_matchup)
 end
@@ -186,21 +193,21 @@ function girl_matchup(names)
     weights = AnalyticWeights(
         (1.01 .- played ./ max(1,maximum(played))) .^2
     )
-    
+
     ns = sample(sub_names,weights,2,replace=false)
     matchup(ns[1],ns[2],names,girl_matchup)
 end
 
 function boy_matchup(names)
     gender = boy
-    
+
     #weight the sample inversely to num of comparisons so far
     sub_names = collect(values(names[gender]))
     played = [n.played for n in sub_names]
     weights = AnalyticWeights(
         (1.01 .- played ./ max(1,maximum(played))) .^2
     )
-    
+
     ns = sample(sub_names,weights,2,replace=false)
     matchup(ns[1],ns[2],names,boy_matchup)
 end
@@ -217,12 +224,12 @@ function matchup(name1,name2,names,next)
     gender_str = name1.gender == boy ? "boy ♂ " : "girl ♀ "
     menu = RadioMenu(options)
     choice = request("Pick winner for $gender_str", menu)
-    
-    if choice == 1 
+
+    if choice == 1
         m = Matchup(name1.name,name2.name,name1.gender)
     elseif choice == 2
         m = Matchup(name2.name,name1.name,name1.gender)
-    elseif choice == 3 
+    elseif choice == 3
         main_menu(names)
     else
         return
@@ -272,7 +279,7 @@ function main_menu(names)
     ]
     menu = RadioMenu(options)
     choice = request("Select an option:", menu)
-    
+
     println("You selected $(options[choice])")
     if choice == 1
         random_matchup(names)
@@ -293,5 +300,11 @@ function main_menu(names)
 end
 
 export start
+
+function julia_main()::Cint
+    # do something based on ARGS?
+    start("Loudenback")
+    return 0 # if things finished successfully
+  end
 
 end # module
